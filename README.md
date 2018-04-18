@@ -1,6 +1,7 @@
 # jsonml.js
 
 [![Build Status](https://travis-ci.org/CondeNast/jsonml.js.svg?branch=master)](https://travis-ci.org/CondeNast/jsonml.js)
+[![Coverage Status](https://coveralls.io/repos/github/CondeNast/jsonml.js/badge.svg)](https://coveralls.io/github/CondeNast/jsonml.js)
 
 JsonML-related tools.
 
