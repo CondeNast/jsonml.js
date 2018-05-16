@@ -43,25 +43,21 @@ describe('html', function() {
 
     it('should identify raw Markup instances', function() {
       const inst = html.raw('foo');
-      assert.equal(html.isRaw(inst), true);
+      assert.strictEqual(html.isRaw(inst), true);
     });
 
     it('should return false for other objects', function() {
       const obj = { value: 'foo' };
-      assert.equal(html.isRaw(obj), false);
+      assert.strictEqual(html.isRaw(obj), false);
     });
   });
 
   describe('onerror', function() {
     it('should export null by default', function() {
-      assert.equal(html.onerror, null);
+      assert.strictEqual(html.onerror, null);
     });
   });
 
-  // NOTE: Patch expects to be given a representation of the SAME node to update it
-  // it does not work when jml is a string or an array of one element
-  // it will not modify text nodes and it will not _remove_ existing attributes by ommission
-  // patch will only append attributes and nodes
   describe('patch', function() {
     it('should export a method', function() {
       assert.equal(typeof html.patch, 'function');
@@ -77,12 +73,11 @@ describe('html', function() {
       assert.equal(elem.outerHTML, '<div id="a1">hello <span>world</span></div>');
     });
 
-    // @TODO - what is the expectation here?
-    xit('should update the value of a text node?', function() {
+    it('should not update the value of a text node', function() {
       const elem = document.createTextNode('foo');
       const jml = ['', 'bar'];
       html.patch(elem, jml);
-      assert.equal(elem.nodeValue, 'bar');
+      assert.equal(elem.nodeValue, 'foo');
     });
 
     it('should not modify the element tag', function() {
@@ -99,11 +94,11 @@ describe('html', function() {
     });
 
     it('should return null for falsy values', function() {
-      assert.equal(html.toHTML(), null);
-      assert.equal(html.toHTML(0), null);
-      assert.equal(html.toHTML(false), null);
-      assert.equal(html.toHTML(NaN), null);
-      assert.equal(html.toHTML(''), null);
+      assert.strictEqual(html.toHTML(), null);
+      assert.strictEqual(html.toHTML(0), null);
+      assert.strictEqual(html.toHTML(false), null);
+      assert.strictEqual(html.toHTML(NaN), null);
+      assert.strictEqual(html.toHTML(''), null);
     });
 
     it('should return a text node with an error if not passed a valid JsonML node', function() {

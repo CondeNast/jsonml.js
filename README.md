@@ -114,13 +114,29 @@ html.onerror = ex => console.error(ex);
 
 #### `patch(elem, jml, filter)`
 
-Append JsonML content to an existing DOM node.
+Update an existing DOM node from JsonML.
+
+This method can be used to append attributes or elements but not remove either. Nor can it be used to modify the tagName of the selected element. It also cannot be used to modify the content of a text node.
 
 - `@param` `{Element}` elem - DOM [Element]
 - `@param` `{any}` jml
 - `@param` `{Function}` filter
   The filter method is called with the signature: `filter( elem ) => elem`
 - `@returns` `{Element}` DOM element
+
+**Example**
+```html
+<div id="my-el"></div>
+```
+```js
+const elem = document.getElementById('my-el');
+html.patch(elem, ['div', { class: 'foo' }, ['span', 'hello']]);
+```
+```html
+<div class="foo" id="my-el">
+  <span>hello</span>
+</div>
+```
 
 -----
 
