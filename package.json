@@ -2,12 +2,17 @@
   "name": "@condenast/jsonml.js",
   "version": "1.0.0",
   "description": "JsonML-related tools.",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "files": [
+    "*.md",
+    "dist"
+  ],
   "scripts": {
     "lint": "eslint ./lib/utils.js ./test",
     "eslint-fix": "eslint --fix ./lib/utils.js ./test",
-    "babel": "babel src --out-dir lib",
-    "pub": "npm run babel && npm publish && rm -rf lib",
+    "prebuild": "rm -rf dist",
+    "build": "babel lib --out-dir dist",
+    "prepublishOnly": "babel lib --out-dir dist",
     "test": "nyc mocha"
   },
   "babel": {

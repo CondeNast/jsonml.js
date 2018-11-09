@@ -1,6 +1,9 @@
 {
   "all": true,
   "cache": false,
+  "include": [
+    "lib"
+  ],
   "reporter": [
     "lcov",
     "text"

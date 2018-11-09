@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert');
-const JsonML = require('..');
+const JsonML = require('../lib');
 const dom = require('../lib/dom');
 const html = require('../lib/html');
 const utils = require('../lib/utils');
