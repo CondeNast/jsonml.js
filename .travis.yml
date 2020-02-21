@@ -1,12 +1,11 @@
 language: node_js
 node_js:
-  - "4"
-  - "6"
-  - "8"
+  - "10"
+  - "12"
 
 notifications:
   email: false
 
 after_success:
   # Deploy coverage reports to Coveralls for node 8 run
-  - if [[ $(node -v) == v8* ]]; then npm install coveralls; ./node_modules/.bin/coveralls < coverage/lcov.info; fi
+  - if [[ $(node -v) == v12* ]]; then npm install coveralls; ./node_modules/.bin/coveralls < coverage/lcov.info; fi

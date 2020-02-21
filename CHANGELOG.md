@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Chores
+- Update to node 10 for development and testing.
+  The distributed module will remain es5-compliant using babel.
+
 ## Version 1.0.2 - 2019-04-10
 ### Fixed
 - Add top-level index.js file to avoid issues where npm@3 can install a package missing the `main` property
