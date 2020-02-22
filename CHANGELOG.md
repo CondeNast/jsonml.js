@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Ensure valid table structure when creating or updating elements when
   using the `toHTML()` or `patch()` methods ([#28])
 
+### Changed
+- Update jsdom to v16, used in the DOM interface for using JsonML to interact with the DOM.
+
+
 [#28]: https://github.com/CondeNast/jsonml.js/pull/28
 
 ### Chores

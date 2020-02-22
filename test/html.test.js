@@ -1,17 +1,19 @@
 'use strict';
 
 const assert = require('assert');
-const jsdom = require('jsdom').jsdom;
+const { JSDOM } = require('jsdom');
 const html = require('../lib/html');
 
 describe('html', function() {
   let document;
 
   before(function() {
-    document = global.document = jsdom();
+    global.window = new JSDOM().window;
+    document = global.document = global.window.document;
   });
 
   after(function() {
+    delete global.window;
     delete global.document;
     document = null;
   });

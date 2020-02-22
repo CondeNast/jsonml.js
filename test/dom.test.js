@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('assert');
-const jsdom = require('jsdom').jsdom;
+const { JSDOM } = require('jsdom');
 const dom = require('../lib/dom');
 
 describe('dom', function() {
@@ -9,9 +9,8 @@ describe('dom', function() {
     let doc;
 
     before(function() {
-      // Using jsdom@8.5.0
-      // see: https://github.com/jsdom/jsdom/tree/8.5.0#jsdom
-      doc = jsdom('<!DOCTYPE html><html><head></head><body></body></html>');
+      const { window } = new JSDOM('<!DOCTYPE html><html><head></head><body></body></html>');
+      doc = window.document;
     });
 
     afterEach(function() {
@@ -139,7 +138,7 @@ describe('dom', function() {
 
       it('should transform a doctype node with extended attributes', function() {
         const HTML4_DOCTYPE = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"\n"http://www.w3.org/TR/html4/loose.dtd">';
-        const html4doc = jsdom(`${HTML4_DOCTYPE}><html><body></body></html>`);
+        const { window: { document: html4doc } } = new JSDOM(`${HTML4_DOCTYPE}><html><body></body></html>`);
         assert.notEqual(html4doc.doctype, null);
         const jml = dom.fromHTML(html4doc.doctype);
         assert.deepEqual(jml, ['!', 'DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"']);
