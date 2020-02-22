@@ -131,7 +131,7 @@ describe('dom', function() {
 
     it('should allow a filter param to modify the returned JsonML node', function() {
       const html = '<div>hello</div>';
-      const jml = dom.fromHTMLText(html, (jml) => {
+      const jml = dom.fromHTMLText(html, jml => {
         jml[0] = 'foo';
         return jml;
       });

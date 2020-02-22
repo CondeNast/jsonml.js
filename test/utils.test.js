@@ -292,7 +292,7 @@ describe('utils', function() {
       });
 
       it('should append element with all descendents', function() {
-        const jml = ['div', { a: 1}];
+        const jml = ['div', { a: 1 }];
         const subtree = ['section',
           ['p', 'hello'],
           ['p', 'world'],

@@ -5,12 +5,15 @@ const jsdom = require('jsdom').jsdom;
 const html = require('../lib/html');
 
 describe('html', function() {
+  let document;
+
   before(function() {
-    global.document = jsdom();
+    document = global.document = jsdom();
   });
 
   after(function() {
     delete global.document;
+    document = null;
   });
 
   describe('raw', function() {
@@ -67,7 +70,7 @@ describe('html', function() {
       const elem = document.createElement('div');
       const jml = ['div', { id: 'a1' },
         'hello ',
-        ['span', 'world']
+        ['span', 'world'],
       ];
       html.patch(elem, jml);
       assert.equal(elem.outerHTML, '<div id="a1">hello <span>world</span></div>');
@@ -142,7 +145,7 @@ describe('html', function() {
     it('should create a DOM element for JsonML node with children', function() {
       const jml = ['span', { 'data-foo': 'bar' },
         'hello ',
-        ['strong', 'world']
+        ['strong', 'world'],
       ];
       const elem = html.toHTML(jml);
       assert.equal(elem.outerHTML, '<span data-foo="bar">hello <strong>world</strong></span>');
@@ -167,7 +170,7 @@ describe('html', function() {
     it('should create an html string from a JsonML node with children', function() {
       const jml = ['span', { 'data-foo': 'bar' },
         'hello ',
-        ['strong', 'world']
+        ['strong', 'world'],
       ];
       const text = html.toHTMLText(jml);
       assert.equal(text, '<span data-foo="bar">hello <strong>world</strong></span>');
