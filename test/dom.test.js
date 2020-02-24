@@ -11,7 +11,7 @@ describe('dom', function() {
     before(function() {
       // Using jsdom@8.5.0
       // see: https://github.com/jsdom/jsdom/tree/8.5.0#jsdom
-      doc = jsdom('<html><head></head><body></body></html>');
+      doc = jsdom('<!DOCTYPE html><html><head></head><body></body></html>');
     });
 
     afterEach(function() {
@@ -82,6 +82,28 @@ describe('dom', function() {
       ]);
     });
 
+    it('should include input elements with additional attributes', function() {
+      doc.body.innerHTML = '<div id="my-div"><input name="foo" value="bar" placeholder="hello world" required /></div>';
+      const elem = doc.getElementById('my-div');
+      const jml = dom.fromHTML(elem);
+      assert.deepEqual(jml, ['div', { id: 'my-div' },
+        ['input', {
+          name: 'foo',
+          placeholder: 'hello world',
+          required: '',
+          value: 'bar',
+        }],
+      ]);
+    });
+
+    it('should include input elements no attributes but a DOM value set', function() {
+      doc.body.innerHTML = '<input />';
+      const elem = doc.getElementsByTagName('input')[0];
+      elem.value = 'hello';
+      const jml = dom.fromHTML(elem);
+      assert.deepEqual(jml, ['input', { value: 'hello' }]);
+    });
+
     it('should include textarea elements', function() {
       doc.body.innerHTML = '<div id="my-div"><textarea name="foo">hello world</textarea></div>';
       const elem = doc.getElementById('my-div');
@@ -89,6 +111,47 @@ describe('dom', function() {
       assert.deepEqual(jml, ['div', { id: 'my-div' },
         ['textarea', { name: 'foo' }, 'hello world'],
       ]);
+    });
+
+    it('should include empty textarea elements', function() {
+      doc.body.innerHTML = '<div id="my-div"><textarea name="foo"></textarea></div>';
+      const elem = doc.getElementById('my-div');
+      const jml = dom.fromHTML(elem);
+      assert.deepEqual(jml, ['div', { id: 'my-div' },
+        ['textarea', { name: 'foo' }],
+      ]);
+    });
+
+    it('should include a textarea element with a value', function() {
+      doc.body.innerHTML = '<textarea id="my-text" name="foo"></textarea>';
+      const elem = doc.getElementById('my-text');
+      elem.value = 'hello world';
+      const jml = dom.fromHTML(elem);
+      assert.deepEqual(jml, ['textarea', { id: 'my-text', name: 'foo' }, 'hello world']);
+    });
+
+    describe('doctype', function() {
+      it('should transform a doctype node', function() {
+        assert.notEqual(doc.doctype, null);
+        const jml = dom.fromHTML(doc.doctype);
+        assert.deepEqual(jml, ['!', 'DOCTYPE html']);
+      });
+
+      it('should transform a doctype node with extended attributes', function() {
+        const HTML4_DOCTYPE = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"\n"http://www.w3.org/TR/html4/loose.dtd">';
+        const html4doc = jsdom(`${HTML4_DOCTYPE}><html><body></body></html>`);
+        assert.notEqual(html4doc.doctype, null);
+        const jml = dom.fromHTML(html4doc.doctype);
+        assert.deepEqual(jml, ['!', 'DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"']);
+      });
+
+      it('should transform a doctype node with an optional filter', function() {
+        assert.notEqual(doc.doctype, null);
+        const jml = dom.fromHTML(doc.doctype, (jml, elem) => {
+          return jml.concat({ type: elem.toString() });
+        });
+        assert.deepEqual(jml, ['!', 'DOCTYPE html', { type: '[object DocumentType]' }]);
+      });
     });
 
     it('should ignore comment nodes', function() {
