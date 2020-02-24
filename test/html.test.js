@@ -89,6 +89,138 @@ describe('html', function() {
       html.patch(elem, jml);
       assert.equal(elem.outerHTML, '<div id="a1"></div>');
     });
+
+    it('should update an element given JsonML with raw (Markup) instance', function() {
+      const rawStr = new html.raw('foo');
+      assert.equal(rawStr.value, 'foo');
+      assert.equal(rawStr.toString(), 'foo');
+      const elem = document.createElement('div');
+      const jml = ['', rawStr];
+      html.patch(elem, jml);
+      assert.equal(elem.outerHTML, '<div>foo</div>');
+    });
+
+    describe('element attributes', function() {
+      it('should be able to update element attributes', function() {
+        const elem = document.createElement('input');
+        const attrs = {
+          id: 'my-el-1',
+          name: 'my-best-el',
+          className: 'foo bar baz',
+          disabled: true,
+        };
+        const jml = ['', attrs];
+        html.patch(elem, jml);
+        assert.equal(elem.outerHTML, `<input id="${attrs.id}" name="${attrs.name}" class="${attrs.className}" disabled="">`);
+      });
+
+      it('should be able to update "duplicate" attributes', function() {
+        const elem = document.createElement('input');
+        const attrs = {
+          enctype: 'utf-8',
+          onscroll: function onscroll() {},
+        };
+        const jml = ['', attrs];
+        html.patch(elem, jml);
+        assert.equal(elem.outerHTML, '<input enctype="utf-8" encoding="utf-8">');
+      });
+
+      it('should be able to update boolean attributes on arbitrary elements', function() {
+        const elem = document.createElement('div');
+        const attrs = {
+          disabled: true,
+        };
+        const jml = ['', attrs];
+        html.patch(elem, jml);
+        assert.equal(elem.outerHTML, '<div disabled="disabled"></div>');
+      });
+
+      it('should be able to update element styles through attributes', function() {
+        const elem = document.createElement('input');
+        // NOTE: JsonML style attribute must provide the literal inline CSS string value.
+        // An object of DOM style properties (e.g. marginTop) will not be applied as expected.
+        const attrs = {
+          style: 'color: blue; margin-top: 25px;',
+        };
+        const jml = ['', attrs];
+        html.patch(elem, jml);
+        assert.equal(elem.outerHTML, `<input style="${attrs.style}">`);
+      });
+
+      it('should be able to update set event handlers through attributes', function(done) {
+        const elem = document.createElement('input');
+        // NOTE: event names must be lowercase. camelCase will currently fail
+        // click to complete the test otherwise the test will fail due to timeout
+        html.patch(elem, ['', { onclick: () => done() }]);
+        elem.dispatchEvent(new document.defaultView.Event('click'));
+      });
+    });
+
+    describe('tables', function() {
+      it('should attempt to append a TD cell to by creating a tbody', function() {
+        const elem = document.createElement('table');
+        const jml = ['',
+          ['td', 'rogue table cell'],
+        ];
+        html.patch(elem, jml);
+        assert.equal(elem.outerHTML, '<table><tbody><td>rogue table cell</td></tbody></table>');
+      });
+
+      it('should attempt to append a TH cell to by creating a thead', function() {
+        const elem = document.createElement('table');
+        const jml = ['',
+          ['th', 'rogue table cell'],
+        ];
+        html.patch(elem, jml);
+        assert.equal(elem.outerHTML, '<table><thead><th>rogue table cell</th></thead></table>');
+      });
+
+      // NOTE: this does not work when adding TH cells
+      it('should attempt to append a TD cell to an existing tbody', function() {
+        const elem = document.createElement('table');
+        const tbody = document.createElement('tbody');
+        tbody.setAttribute('id', 'my-tbody');
+        elem.appendChild(tbody);
+        const jml = ['',
+          ['td', 'rogue table cell'],
+        ];
+        html.patch(elem, jml);
+        assert.equal(elem.outerHTML, '<table><tbody id="my-tbody"><td>rogue table cell</td></tbody></table>');
+      });
+
+      // NOTE: this does not work when adding TH cells
+      it('should attempt to append a TD cell to the last existing tbody', function() {
+        const elem = document.createElement('table');
+        [1, 2, 3].forEach(n => {
+          const tbody = document.createElement('tbody');
+          tbody.setAttribute('id', `my-tbody-${n}`);
+          elem.appendChild(tbody);
+        });
+        const jml = ['',
+          ['td', 'rogue table cell'],
+        ];
+        html.patch(elem, jml);
+        assert.equal(elem.outerHTML,
+          '<table>' +
+          '<tbody id="my-tbody-1"></tbody>' +
+          '<tbody id="my-tbody-2"></tbody>' +
+          '<tbody id="my-tbody-3"><td>rogue table cell</td></tbody>' +
+          '</table>'
+        );
+      });
+    });
+
+    describe('comments', function() {
+      it('should append text to existing comments', function() {
+        const message = 'this is a comment';
+        const elem = document.createComment(message);
+        const jml = ['', '...hello'];
+        html.patch(elem, jml);
+        const div = document.createElement('div');
+        div.appendChild(elem);
+        assert.equal(div.innerHTML, `<!--${message}...hello-->`);
+      });
+    });
   });
 
   describe('toHTML', function() {
@@ -149,6 +281,204 @@ describe('html', function() {
       ];
       const elem = html.toHTML(jml);
       assert.equal(elem.outerHTML, '<span data-foo="bar">hello <strong>world</strong></span>');
+    });
+
+    // Also tested within the patch() suite
+    describe('element attributes', function() {
+      it('should be able to update element attributes', function() {
+        const attrs = {
+          id: 'my-el-1',
+          name: 'my-best-el',
+          className: 'foo bar baz',
+          disabled: true,
+        };
+        const jml = ['input', attrs];
+        const elem = html.toHTML(jml);
+        assert.equal(elem.outerHTML, `<input id="${attrs.id}" name="${attrs.name}" class="${attrs.className}" disabled="">`);
+      });
+
+      it('should be able to update "duplicate" attributes', function() {
+        const attrs = {
+          enctype: 'utf-8',
+          onscroll: function onscroll() {},
+        };
+        const jml = ['input', attrs];
+        const elem = html.toHTML(jml);
+        assert.equal(elem.outerHTML, '<input enctype="utf-8" encoding="utf-8">');
+      });
+
+      it('should be able to update boolean attributes on arbitrary elements', function() {
+        const attrs = {
+          disabled: true,
+        };
+        const jml = ['div', attrs];
+        const elem = html.toHTML(jml);
+        assert.equal(elem.outerHTML, '<div disabled="disabled"></div>');
+      });
+
+      it('should be able to update element styles through attributes', function() {
+        // NOTE: JsonML style attribute must provide the literal inline CSS string value.
+        // An object of DOM style properties (e.g. marginTop) will not be applied as expected.
+        const attrs = {
+          style: 'color: blue; margin-top: 25px;',
+        };
+        const jml = ['input', attrs];
+        const elem = html.toHTML(jml);
+        assert.equal(elem.outerHTML, `<input style="${attrs.style}">`);
+      });
+
+      it('should be able to update set event handlers through attributes', function(done) {
+        // NOTE: event names must be lowercase. camelCase will currently fail
+        // click to complete the test otherwise the test will fail due to timeout
+        const elem = html.toHTML(['input', { onclick: () => done() }]);
+        elem.dispatchEvent(new document.defaultView.Event('click'));
+      });
+
+      it('should set null attribute values to empty strings', function() {
+        const jml = ['input', {
+          id: null,
+          class: null,
+        }];
+        const elem = html.toHTML(jml);
+        assert.equal(elem.outerHTML, '<input id="" class="">');
+      });
+
+      it('should omit set null "value" attributes', function() {
+        const jml = ['input', {
+          value: null,
+        }];
+        const elem = html.toHTML(jml);
+        assert.equal(elem.outerHTML, '<input>');
+      });
+
+      it('should set boolean attributes', function() {
+        const jml = ['input', {
+          disabled: true,
+          hidden: false,
+        }];
+        const elem = html.toHTML(jml);
+        assert.equal(elem.disabled, true);
+        assert.equal(elem.hidden, false);
+        assert.equal(elem.outerHTML, '<input disabled="">');
+      });
+
+      it('should coerce date objects to strings setting attribute values', function() {
+        const someDate = new Date('2015-06-15');
+        const jml = ['div', {
+          'data-date': someDate,
+        }];
+        const elem = html.toHTML(jml);
+        assert.equal(elem.outerHTML, `<div data-date="${someDate.toString()}"></div>`);
+      });
+    });
+
+
+    describe('tables', function() {
+      it('should do create table elements from JsonML', function() {
+        const jml = ['table', { id: 'my-table', border: 1, cellPadding: 2, cellSpacing: 3 },
+          ['thead',
+            ['tr', { class: 'row-heading' },
+              ['th', '-'],
+              ['th', 'A'],
+              ['th', 'B'],
+            ],
+          ],
+          ['tbody',
+            ['tr', { class: 'row' },
+              ['th', '1'],
+              ['th', 'a1'],
+              ['th', 'b1'],
+            ],
+            ['tr', { class: 'row-alt' },
+              ['th', '2'],
+              ['th', { 'data-val': 'foo' }, 'a2'],
+              ['th', 'b2'],
+            ],
+          ],
+        ];
+        const elem = html.toHTML(jml);
+        assert.equal(elem.outerHTML,
+          '<table id="my-table" border="1" cellpadding="2" cellspacing="3">' +
+          '<thead>' +
+          '<tr class="row-heading"><th>-</th><th>A</th><th>B</th></tr>' +
+          '</thead>' +
+          '<tbody>' +
+          '<tr class="row"><th>1</th><th>a1</th><th>b1</th></tr>' +
+          '<tr class="row-alt"><th>2</th><th data-val="foo">a2</th><th>b2</th></tr>' +
+          '</tbody>' +
+          '</table>'
+        );
+      });
+
+      it('should nest rows inside a tbody if there is no body', function() {
+        const jml = ['table',
+          ['tr',
+            ['td', '1'],
+            ['td', '2'],
+            ['td', '3'],
+          ],
+        ];
+        const elem = html.toHTML(jml);
+        assert.equal(elem.outerHTML,
+          '<table>' +
+          '<tbody>' +
+          '<tr><td>1</td><td>2</td><td>3</td></tr>' +
+          '</tbody>' +
+          '</table>'
+        );
+      });
+
+      it('should do create table elements containing multiple tbodies', function() {
+        const jml = ['table', { id: 'my-table', border: 1, cellPadding: 2, cellSpacing: 3 },
+          ['tbody',
+            ['tr', { class: 'row' },
+              ['td', 'a1'],
+              ['td', 'a2'],
+            ],
+          ],
+          ['tbody',
+            ['tr', { class: 'row' },
+              ['td', 'b1'],
+              ['td', 'b2'],
+            ],
+          ],
+        ];
+        const elem = html.toHTML(jml);
+        assert.equal(elem.outerHTML,
+          '<table id="my-table" border="1" cellpadding="2" cellspacing="3">' +
+          '<tbody>' +
+          '<tr class="row"><td>a1</td><td>a2</td></tr>' +
+          '</tbody>' +
+          '<tbody>' +
+          '<tr class="row"><td>b1</td><td>b2</td></tr>' +
+          '</tbody>' +
+          '</table>'
+        );
+      });
+    });
+
+    describe('comments', function() {
+      it('should create a comment from JsonML', function() {
+        const message = 'this is a comment';
+        const jml = ['!', message];
+        const elem = html.toHTML(jml);
+        assert.equal(elem.toString(), '[object Comment]');
+        const div = document.createElement('div');
+        div.appendChild(elem);
+        assert.equal(div.innerHTML, `<!--${message}-->`);
+      });
+
+      // NOTE: This tests the existing code, but there is no documentation as to why it should be supported
+      // The code branch inserts a space after the message
+      it('should create a shorthand comment from JsonML', function() {
+        const message = 'this is a comment';
+        const jml = [`! ${message}`];
+        const elem = html.toHTML(jml);
+        assert.equal(elem.toString(), '[object Comment]');
+        const div = document.createElement('div');
+        div.appendChild(elem);
+        assert.equal(div.innerHTML, `<!-- ${message} -->`);
+      });
     });
   });
 
