@@ -157,13 +157,21 @@ describe('html', function() {
     });
 
     describe('tables', function() {
-      it('should attempt to append a TD cell to by creating a tbody', function() {
+      it('should attempt to append a TD cell to by creating a tbody and tr', function() {
         const elem = document.createElement('table');
         const jml = ['',
           ['td', 'rogue table cell'],
         ];
         html.patch(elem, jml);
-        assert.equal(elem.outerHTML, '<table><tbody><td>rogue table cell</td></tbody></table>');
+        assert.equal(elem.outerHTML,
+          '<table>' +
+          '<tbody>' +
+          '<tr>' +
+          '<td>rogue table cell</td>' +
+          '</tr>' +
+          '</tbody>' +
+          '</table>'
+        );
       });
 
       it('should attempt to append a TH cell to by creating a thead', function() {
@@ -172,10 +180,17 @@ describe('html', function() {
           ['th', 'rogue table cell'],
         ];
         html.patch(elem, jml);
-        assert.equal(elem.outerHTML, '<table><thead><th>rogue table cell</th></thead></table>');
+        assert.equal(elem.outerHTML,
+          '<table>' +
+          '<thead>' +
+          '<tr>' +
+          '<th>rogue table cell</th>' +
+          '</tr>' +
+          '</thead>' +
+          '</table>'
+        );
       });
 
-      // NOTE: this does not work when adding TH cells
       it('should attempt to append a TD cell to an existing tbody', function() {
         const elem = document.createElement('table');
         const tbody = document.createElement('tbody');
@@ -185,10 +200,38 @@ describe('html', function() {
           ['td', 'rogue table cell'],
         ];
         html.patch(elem, jml);
-        assert.equal(elem.outerHTML, '<table><tbody id="my-tbody"><td>rogue table cell</td></tbody></table>');
+        assert.equal(elem.outerHTML,
+          '<table>' +
+          '<tbody id="my-tbody">' +
+          '<tr>' +
+          '<td>rogue table cell</td>' +
+          '</tr>' +
+          '</tbody>' +
+          '</table>'
+        );
       });
 
-      // NOTE: this does not work when adding TH cells
+
+      it('should attempt to append a TH cell to an existing thead', function() {
+        const elem = document.createElement('table');
+        const thead = document.createElement('thead');
+        thead.setAttribute('id', 'my-thead');
+        elem.appendChild(thead);
+        const jml = ['',
+          ['th', 'rogue table cell'],
+        ];
+        html.patch(elem, jml);
+        assert.equal(elem.outerHTML,
+          '<table>' +
+          '<thead id="my-thead">' +
+          '<tr>' +
+          '<th>rogue table cell</th>' +
+          '</tr>' +
+          '</thead>' +
+          '</table>'
+        );
+      });
+
       it('should attempt to append a TD cell to the last existing tbody', function() {
         const elem = document.createElement('table');
         [1, 2, 3].forEach(n => {
@@ -204,7 +247,29 @@ describe('html', function() {
           '<table>' +
           '<tbody id="my-tbody-1"></tbody>' +
           '<tbody id="my-tbody-2"></tbody>' +
-          '<tbody id="my-tbody-3"><td>rogue table cell</td></tbody>' +
+          '<tbody id="my-tbody-3"><tr><td>rogue table cell</td></tr></tbody>' +
+          '</table>'
+        );
+      });
+
+      it('should attempt to append a TD cell to the last row of the last existing tbody', function() {
+        const elem = document.createElement('table');
+        [1, 2, 3].forEach(n => {
+          const tbody = document.createElement('tbody');
+          tbody.setAttribute('id', `my-tbody-${n}`);
+          tbody.appendChild(document.createElement('tr'));
+          tbody.appendChild(document.createElement('tr'));
+          elem.appendChild(tbody);
+        });
+        const jml = ['',
+          ['td', 'rogue table cell'],
+        ];
+        html.patch(elem, jml);
+        assert.equal(elem.outerHTML,
+          '<table>' +
+          '<tbody id="my-tbody-1"><tr></tr><tr></tr></tbody>' +
+          '<tbody id="my-tbody-2"><tr></tr><tr></tr></tbody>' +
+          '<tbody id="my-tbody-3"><tr></tr><tr><td>rogue table cell</td></tr></tbody>' +
           '</table>'
         );
       });

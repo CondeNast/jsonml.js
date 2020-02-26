@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+- Ensure valid table structure when creating or updating elements when
+  using the `toHTML()` or `patch()` methods ([#28])
+
+[#28]: https://github.com/CondeNast/jsonml.js/pull/28
+
 ### Chores
 - Update to node 10 for development and testing.
   The distributed module will remain es5-compliant using babel.
