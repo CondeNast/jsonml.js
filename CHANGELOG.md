@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 - Update jsdom to v16, used in the DOM interface for using JsonML to interact with the DOM.
-
+- Use constants when comparing nodeType
 
 [#28]: https://github.com/CondeNast/jsonml.js/pull/28
 
