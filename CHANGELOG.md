@@ -6,12 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Breaking
+- Update jsdom to v16, used in the DOM interface for using JsonML to interact with the DOM.
+  BREAKING CHANGE
+  jsdom requires node version 10 or greater
+
 ### Fixed
 - Ensure valid table structure when creating or updating elements when
   using the `toHTML()` or `patch()` methods ([#28])
 
 ### Changed
-- Update jsdom to v16, used in the DOM interface for using JsonML to interact with the DOM.
 - Use constants when comparing nodeType
 
 [#28]: https://github.com/CondeNast/jsonml.js/pull/28
