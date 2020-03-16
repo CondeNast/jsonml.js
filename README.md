@@ -240,6 +240,63 @@ Determine if a JsonML node has attributes
 - `@param` `{string}` key - attribute name
 - `@param` `{any}` value - attribute value
 
+### XML
+
+#### `fromXML( elem, filter )`
+
+Converts XML nodes to JsonML
+
+- `@param` `{Element}` elem - XML DOM node
+- `@param` `{Function}` filter - optional method to apply on every created JsonML node
+  The filter method is called with the signature: `filter( jml, elem ) => jml`
+- `@returns` `{JsonML|null}` a JsonML node
+
+#### `fromXMLText( xmlText, filter )`
+
+Converts XML text to JsonML
+
+- `@param` `{string}` xmlText - XML text
+- `@param` `{Function}` filter - optional method to apply on every created JsonML node
+  The filter method is called with the signature: `filter( jml, elem ) => jml`
+- `@returns` `{JsonML|null}` a JsonML node
+
+#### `isXML( value )`
+
+- `@param` `{any}` value - Input value to test
+- `@returns` `{boolean}` true if an XML DOM node
+
+#### `parseXML( xmlText )`
+
+Converts XML text to XML DOM nodes
+
+- `@param` `{string}` xmlText - XML text
+- `@returns` `{XMLDocument}` xml document
+
+#### `renderXML( elem )`
+
+Converts XML DOM nodes to XML text
+
+- `@param` `{Element}` elem - XML DOM node
+- `@returns` `{string}` XML string
+
+#### `toXML( jml, filter )`
+
+- `@param` `{JsonML}` jml - JsonML structure
+- `@param` `{Function}` filter - optional method applied to each node during render
+  The filter method is called with the signature: `filter( elem ) => elem`
+- `@returns` `{Element}` XML DOM Element
+
+#### `toXMLText( jml, filter )`
+
+Converts JsonML to XML text
+
+- `@param` `{JsonML}` jml - JsonML structure
+- `@param` `{Function}` filter - optional method applied to each node during render
+  The filter method is called with the signature: `filter( elem ) => elem`
+- `@returns` `{string}` XML string
+
+-----
+
 ## License
 
 MIT
