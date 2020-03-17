@@ -5,17 +5,10 @@ const { JSDOM } = require('jsdom');
 const html = require('../lib/html');
 
 describe('html', function() {
-  let document;
+  let doc;
 
   before(function() {
-    global.window = new JSDOM().window;
-    document = global.document = global.window.document;
-  });
-
-  after(function() {
-    delete global.window;
-    delete global.document;
-    document = null;
+    doc = new JSDOM().window.document;
   });
 
   describe('raw', function() {
@@ -69,7 +62,7 @@ describe('html', function() {
     });
 
     it('should update an element given a new JsonML representation', function() {
-      const elem = document.createElement('div');
+      const elem = doc.createElement('div');
       const jml = ['div', { id: 'a1' },
         'hello ',
         ['span', 'world'],
@@ -79,14 +72,14 @@ describe('html', function() {
     });
 
     it('should not update the value of a text node', function() {
-      const elem = document.createTextNode('foo');
+      const elem = doc.createTextNode('foo');
       const jml = ['', 'bar'];
       html.patch(elem, jml);
       assert.equal(elem.nodeValue, 'foo');
     });
 
     it('should not modify the element tag', function() {
-      const elem = document.createElement('div');
+      const elem = doc.createElement('div');
       const jml = ['span', { id: 'a1' }];
       html.patch(elem, jml);
       assert.equal(elem.outerHTML, '<div id="a1"></div>');
@@ -96,7 +89,7 @@ describe('html', function() {
       const rawStr = new html.raw('foo');
       assert.equal(rawStr.value, 'foo');
       assert.equal(rawStr.toString(), 'foo');
-      const elem = document.createElement('div');
+      const elem = doc.createElement('div');
       const jml = ['', rawStr];
       html.patch(elem, jml);
       assert.equal(elem.outerHTML, '<div>foo</div>');
@@ -104,7 +97,7 @@ describe('html', function() {
 
     describe('element attributes', function() {
       it('should be able to update element attributes', function() {
-        const elem = document.createElement('input');
+        const elem = doc.createElement('input');
         const attrs = {
           id: 'my-el-1',
           name: 'my-best-el',
@@ -117,7 +110,7 @@ describe('html', function() {
       });
 
       it('should be able to update "duplicate" attributes', function() {
-        const elem = document.createElement('input');
+        const elem = doc.createElement('input');
         const attrs = {
           enctype: 'utf-8',
           onscroll: function onscroll() {},
@@ -128,7 +121,7 @@ describe('html', function() {
       });
 
       it('should be able to update boolean attributes on arbitrary elements', function() {
-        const elem = document.createElement('div');
+        const elem = doc.createElement('div');
         const attrs = {
           disabled: true,
         };
@@ -138,7 +131,7 @@ describe('html', function() {
       });
 
       it('should be able to update element styles through attributes', function() {
-        const elem = document.createElement('input');
+        const elem = doc.createElement('input');
         // NOTE: JsonML style attribute must provide the literal inline CSS string value.
         // An object of DOM style properties (e.g. marginTop) will not be applied as expected.
         const attrs = {
@@ -150,17 +143,17 @@ describe('html', function() {
       });
 
       it('should be able to update set event handlers through attributes', function(done) {
-        const elem = document.createElement('input');
+        const elem = doc.createElement('input');
         // NOTE: event names must be lowercase. camelCase will currently fail
         // click to complete the test otherwise the test will fail due to timeout
         html.patch(elem, ['', { onclick: () => done() }]);
-        elem.dispatchEvent(new document.defaultView.Event('click'));
+        elem.dispatchEvent(new doc.defaultView.Event('click'));
       });
     });
 
     describe('tables', function() {
       it('should attempt to append a TD cell to by creating a tbody and tr', function() {
-        const elem = document.createElement('table');
+        const elem = doc.createElement('table');
         const jml = ['',
           ['td', 'rogue table cell'],
         ];
@@ -177,7 +170,7 @@ describe('html', function() {
       });
 
       it('should attempt to append a TH cell to by creating a thead', function() {
-        const elem = document.createElement('table');
+        const elem = doc.createElement('table');
         const jml = ['',
           ['th', 'rogue table cell'],
         ];
@@ -194,8 +187,8 @@ describe('html', function() {
       });
 
       it('should attempt to append a TD cell to an existing tbody', function() {
-        const elem = document.createElement('table');
-        const tbody = document.createElement('tbody');
+        const elem = doc.createElement('table');
+        const tbody = doc.createElement('tbody');
         tbody.setAttribute('id', 'my-tbody');
         elem.appendChild(tbody);
         const jml = ['',
@@ -215,8 +208,8 @@ describe('html', function() {
 
 
       it('should attempt to append a TH cell to an existing thead', function() {
-        const elem = document.createElement('table');
-        const thead = document.createElement('thead');
+        const elem = doc.createElement('table');
+        const thead = doc.createElement('thead');
         thead.setAttribute('id', 'my-thead');
         elem.appendChild(thead);
         const jml = ['',
@@ -235,9 +228,9 @@ describe('html', function() {
       });
 
       it('should attempt to append a TD cell to the last existing tbody', function() {
-        const elem = document.createElement('table');
+        const elem = doc.createElement('table');
         [1, 2, 3].forEach(n => {
-          const tbody = document.createElement('tbody');
+          const tbody = doc.createElement('tbody');
           tbody.setAttribute('id', `my-tbody-${n}`);
           elem.appendChild(tbody);
         });
@@ -255,12 +248,12 @@ describe('html', function() {
       });
 
       it('should attempt to append a TD cell to the last row of the last existing tbody', function() {
-        const elem = document.createElement('table');
+        const elem = doc.createElement('table');
         [1, 2, 3].forEach(n => {
-          const tbody = document.createElement('tbody');
+          const tbody = doc.createElement('tbody');
           tbody.setAttribute('id', `my-tbody-${n}`);
-          tbody.appendChild(document.createElement('tr'));
-          tbody.appendChild(document.createElement('tr'));
+          tbody.appendChild(doc.createElement('tr'));
+          tbody.appendChild(doc.createElement('tr'));
           elem.appendChild(tbody);
         });
         const jml = ['',
@@ -280,10 +273,10 @@ describe('html', function() {
     describe('comments', function() {
       it('should append text to existing comments', function() {
         const message = 'this is a comment';
-        const elem = document.createComment(message);
+        const elem = doc.createComment(message);
         const jml = ['', '...hello'];
         html.patch(elem, jml);
-        const div = document.createElement('div');
+        const div = doc.createElement('div');
         div.appendChild(elem);
         assert.equal(div.innerHTML, `<!--${message}...hello-->`);
       });
@@ -398,7 +391,7 @@ describe('html', function() {
         // NOTE: event names must be lowercase. camelCase will currently fail
         // click to complete the test otherwise the test will fail due to timeout
         const elem = html.toHTML(['input', { onclick: () => done() }]);
-        elem.dispatchEvent(new document.defaultView.Event('click'));
+        elem.dispatchEvent(new doc.defaultView.Event('click'));
       });
 
       it('should set null attribute values to empty strings', function() {
@@ -530,7 +523,7 @@ describe('html', function() {
         const jml = ['!', message];
         const elem = html.toHTML(jml);
         assert.equal(elem.toString(), '[object Comment]');
-        const div = document.createElement('div');
+        const div = doc.createElement('div');
         div.appendChild(elem);
         assert.equal(div.innerHTML, `<!--${message}-->`);
       });
@@ -542,7 +535,7 @@ describe('html', function() {
         const jml = [`! ${message}`];
         const elem = html.toHTML(jml);
         assert.equal(elem.toString(), '[object Comment]');
-        const div = document.createElement('div');
+        const div = doc.createElement('div');
         div.appendChild(elem);
         assert.equal(div.innerHTML, `<!-- ${message} -->`);
       });
