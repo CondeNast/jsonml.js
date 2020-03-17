@@ -2,7 +2,7 @@
 
 const assert = require('assert');
 const { JSDOM } = require('jsdom');
-const html = require('../lib/html');
+let html = require('../lib/html');
 
 describe('html', function() {
   let doc;
@@ -564,6 +564,29 @@ describe('html', function() {
       ];
       const text = html.toHTMLText(jml);
       assert.equal(text, '<span data-foo="bar">hello <strong>world</strong></span>');
+    });
+  });
+
+  describe('when a global document is provided', function() {
+    beforeEach(function() {
+      delete require.cache[require.resolve('../lib/html')];
+    });
+
+    afterEach(function() {
+      delete global.window;
+      delete global.document;
+    });
+
+    after(function() {
+      delete require.cache[require.resolve('../lib/html')];
+      html = require('../lib/html');
+    });
+
+    it('should use the global document', function() {
+      global.window = new JSDOM().window;
+      global.window.document.createTextNode = str => doc.createTextNode(`text:${str}`);
+      html = require('../lib/html');
+      assert.equal(html.toHTML('hello world').nodeValue, 'text:hello world');
     });
   });
 });
