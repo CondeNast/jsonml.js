@@ -6,24 +6,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## Version 2.0.0 - 2020-03-17
 ### Breaking
-- Update jsdom to v16, used in the DOM interface for using JsonML to interact with the DOM.
+- Update jsdom to v16, used in the DOM interface for using JsonML to interact with the DOM. ([#20])
   BREAKING CHANGE
   jsdom requires node version 10 or greater
 
 ### Fixed
-- Ensure valid table structure when creating or updating elements when
+- (html): Create document environment with jsdom if needed ([#31])
+- (html): Ensure valid table structure when creating or updating elements when
   using the `toHTML()` or `patch()` methods ([#28])
 
 ### Changed
 - Use constants when comparing nodeType
 
-[#28]: https://github.com/CondeNast/jsonml.js/pull/28
-
 ### Chores
 - Update to node 10 for development and testing.
-  The distributed module will remain es5-compliant using babel.
 - Update babel packages to latest v7 under @babel scope
+
+[#31]: https://github.com/CondeNast/jsonml.js/pull/31
+[#28]: https://github.com/CondeNast/jsonml.js/pull/28
+[#20]: https://github.com/CondeNast/jsonml.js/pull/20
 
 ## Version 1.0.2 - 2019-04-10
 ### Fixed
