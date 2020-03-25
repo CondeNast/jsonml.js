@@ -25,6 +25,30 @@ describe('utils', function() {
     });
   });
 
+  describe('#isMarkup', function() {
+    it('should export a function', function() {
+      assert.equal(typeof utils.isMarkup, 'function');
+    });
+
+    it('should return true for a Markup element', function() {
+      const el = html.raw('hello');
+      assert.strictEqual(utils.isMarkup(el), true);
+    });
+
+    it('should return false for non Markup values', function() {
+      assert.strictEqual(utils.isMarkup('hello'), false);
+      assert.strictEqual(utils.isMarkup(['div', 'hello']), false);
+      assert.strictEqual(utils.isMarkup(['div', {}, 'hello']), false);
+    });
+
+    it('should return false for falsey values', function() {
+      assert.strictEqual(utils.isMarkup(), false);
+      assert.strictEqual(utils.isMarkup(null), false);
+      assert.strictEqual(utils.isMarkup(0), false);
+      assert.strictEqual(utils.isMarkup(false), false);
+    });
+  });
+
   describe('#getTagName', function() {
     it('should export a function', function() {
       assert.equal(typeof utils.getTagName, 'function');

@@ -195,6 +195,13 @@ Identify a JsonML fragment without any tag or type
 - `@param` `{JsonML}` jml - JsonML node
 - `@returns` `{boolean}` true if JsonML fragment (node without a tag name)
 
+##### `isMarkup( value )`
+
+Identify a raw Markup element
+
+- `@param` `{any}` value - value to test
+- `@returns` `{boolean}` true if representing a raw Markup element
+
 #### Working with JsonML Attributes
 
 ##### `addAttributes( jml, attr )`
