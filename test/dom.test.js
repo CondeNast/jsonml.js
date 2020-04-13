@@ -162,6 +162,17 @@ describe('dom', function() {
         ['span', 'bar'],
       ]);
     });
+
+    it('should maintain spaces between adjacent inline elements', function() {
+      doc.body.innerHTML = '<div id="my-div"><em>foo</em> <em>bar</em></div>';
+      const elem = doc.getElementById('my-div');
+      const jml = dom.fromHTML(elem);
+      assert.deepEqual(jml, ['div', { id: 'my-div' },
+        ['em', 'foo'],
+        ' ',
+        ['em', 'bar'],
+      ]);
+    });
   });
 
   describe('fromHTMLText', function() {
@@ -198,6 +209,16 @@ describe('dom', function() {
         return jml;
       });
       assert.deepEqual(jml, ['foo', 'hello']);
+    });
+
+    it('should maintain spaces between adjacent inline elements', function() {
+      const html = '<p><em>foo</em> <em>bar</em></p>';
+      const jml = dom.fromHTMLText(html);
+      assert.deepEqual(jml, ['p',
+        ['em', 'foo'],
+        ' ',
+        ['em', 'bar'],
+      ]);
     });
   });
 });
