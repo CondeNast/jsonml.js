@@ -242,6 +242,10 @@ Determine if a JsonML node has attributes
 
 ### XML
 
+```js
+const { xml } = require('@condenast/jsonml.js');
+```
+
 #### `fromXML( elem, filter )`
 
 Converts XML nodes to JsonML

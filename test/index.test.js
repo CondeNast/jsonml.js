@@ -8,8 +8,20 @@ const xml = require('../lib/xml');
 const utils = require('../lib/utils');
 
 describe('JsonML module index', function() {
-  it('should merge and export interfaces', function() {
-    assert.deepEqual(JsonML, Object.assign({}, dom, html, xml, utils));
+  it('should export the dom namespace', function() {
+    assert.deepEqual(JsonML.dom, dom);
+  });
+
+  it('should export the html namespace', function() {
+    assert.deepEqual(JsonML.html, html);
+  });
+
+  it('should export the xml namespace', function() {
+    assert.deepEqual(JsonML.xml, xml);
+  });
+
+  it('should export the utils namespace', function() {
+    assert.deepEqual(JsonML.utils, utils);
   });
 
   it('should export all methods from the dom interface', function() {
