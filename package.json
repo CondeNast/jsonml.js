@@ -49,12 +49,12 @@
     "jsdom": "^16.2.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
-    "@babel/core": "^7.8.4",
-    "@babel/preset-env": "^7.8.4",
-    "eslint": "^7.0.0",
-    "eslint-config-egg": "^8.0.0",
-    "mocha": "^8.0.0",
-    "nyc": "^15.0.0"
+    "@babel/cli": "^8.0.0",
+    "@babel/core": "^8.0.0",
+    "@babel/preset-env": "^8.0.0",
+    "eslint": "^10.0.0",
+    "eslint-config-egg": "^14.0.0",
+    "mocha": "^12.0.0",
+    "nyc": "^18.0.0"
   }
 }
